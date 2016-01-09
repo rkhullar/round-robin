@@ -15,10 +15,10 @@ class Node:
     def __str__(self):
         return str(self.data)
 
-    def has_next(self):
+    def hasNext(self):
         return self.next is not None
 
-    def has_prev(self):
+    def hasPrev(self):
         return self.prev is not None
 
 
@@ -35,7 +35,7 @@ class Queue:
         if self.curr is None:
             return '[]'
         out = '['
-        while self.curr.has_next():
+        while self.curr.hasNext():
             out += str(self.curr) + ', '
             self.curr = self.curr.next
         if self.curr == self.tail:
@@ -46,31 +46,57 @@ class Queue:
         return self.head is None and self.tail is None
 
     def peek(self):
-        return self.head.data
+        if self.head is not None:
+            return self.head.data
+        else:
+            print('error: empty queue')
+            return False
 
     def enq(self, item):
         node = Node(item)
+        # insert to empty queue
         if self.tail is None:
             self.head = node
             self.tail = node
+        # insert to queue with at least one item
         else:
             self.tail.next = node
+            node.prev = self.tail
             self.tail = node
         self.size += 1
 
     def deq(self):
         self.curr = self.head
+        # deque from empty queue
         if self.curr is None:
-            print('cannot deque empty queue')
+            print('error: empty queue')
             return False
         item = self.head.data
-        if self.curr.has_next():
+        # deque from queue with at least two items
+        if self.curr.hasNext():
             self.curr = self.curr.next
+            self.curr.prev = None
             self.head = self.curr
             self.size -= 1
+        # deque from queue with exactly one item
         else:
             self.head = None
             self.tail = None
             self.size = 0
         return item
 
+
+if __name__ == 'main':
+    q = Queue()
+    for i in range(10):
+        q.enq(i)
+        print(q)
+    for i in range(10):
+        q.deq()
+        print(q)
+    for i in range(10):
+        q.enq(i)
+        print(q)
+    for i in range(10):
+        q.deq()
+        print(q)

@@ -6,8 +6,8 @@
 
 from simulator import Simulator
 
-sim = Simulator(1)
-sim.load_procs('processes.csv')
+sim = Simulator(2)
+sim.load('processes.csv')
 sim.schedule()
 
 for event in sim.events:

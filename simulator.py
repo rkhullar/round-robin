@@ -44,15 +44,15 @@ class Simulator:
         self.timer = 0
 
     # time quantum
-    def set_qtime(self, tq=2):
+    def quantize(self, tq=2):
         self.quantum = tq
 
     # create procces and add to list
-    def add_proc(self, pname, pat, pbt):
+    def process(self, pname, pat, pbt):
         self.procs.append(Process(pname, pat, pbt))
 
     # create process from csv ';' file and add to list
-    def load_procs(self, path):
+    def load(self, path):
         with open(path) as file:
             content = file.read()
         lines = content.split('\n')
@@ -62,10 +62,10 @@ class Simulator:
                 n = data[0].strip()
                 at = int(data[1].strip())
                 bt = int(data[2].strip())
-                self.add_proc(n, at, bt)
+                self.process(n, at, bt)
 
     # listen for arriving
-    def grab_procs(self):
+    def catch(self):
         temp = []   # to store enqueued processed to be removed from list
         for proc in self.procs:
             if proc.arrive == self.clock:
@@ -74,7 +74,7 @@ class Simulator:
         for proc in temp:
             self.procs.remove(proc)
 
-    def run_proc(self):
+    def run(self):
         proc = self.queue.deq()
         complete = False
         if proc.burst > self.quantum:
@@ -91,8 +91,8 @@ class Simulator:
 
     def schedule(self):
         while self.clock < MAX_CLOCK:
-            self.grab_procs()
+            self.catch()
             if not self.queue.empty():
-                self.run_proc()
+                self.run()
             self.clock += 1
 
