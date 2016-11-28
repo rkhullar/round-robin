@@ -13,7 +13,7 @@ public class Demo
     private static void init()
     {
         plist = new Process[6];
-        plist[0] = new Process(1, 0, 4);
+        plist[0] = new Process(1, 1, 4);
         plist[1] = new Process(2, 1, 5);
         plist[2] = new Process(3, 2, 2);
         plist[3] = new Process(4, 3, 1);

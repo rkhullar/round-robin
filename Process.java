@@ -14,9 +14,18 @@ public class Process
         this.ct = -1;
     }
 
+    public Process clone()
+    {
+        return new Process(id, at, bt);
+    }
+
     public int getArrivalTime()
     {
         return at;
+    }
+    public void setArrivalTime(int at)
+    {
+        this.at = at;
     }
 
     public int getBurstTime()

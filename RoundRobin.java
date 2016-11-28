@@ -2,12 +2,12 @@ public class RoundRobin
 {
     private final static int MAX_TIME = 1000;
 
-    // quantum, clock, schedule
+    // quantum, clock, schedule, requeue
     private int tq, tc, ts;
     private Process[] plist;
-    private Queue<Process> q;
+    private Queue<Process> q1, q2;
     private Queue<TimeBlock> schedule;
-    private Process m;
+    private boolean handled = false;
 
     public void setTimeQuantum(int tq)
     {
@@ -31,12 +31,23 @@ public class RoundRobin
     {
         for(Process p: plist)
             if(p.getArrivalTime() == tc)
-                q.enqueue(p);
+                q1.enqueue(p);
+        Process p;
+        Node<Process> node = q2.getHead();
+        while(node != null)
+        {
+            p = node.getData();
+            if(p.getArrivalTime() == tc)
+                q1.enqueue(p);
+            node = node.getNext();
+        }
     }
 
     private void handleProcess()
     {
-        Process p = q.dequeue();
+        if(!handled)
+            ts = tc;
+        Process p = q1.dequeue();
         int bt = p.getBurstTime();
         int dt = bt > tq ? tq : bt;
         TimeBlock tb = TimeBlock.fromDelta(p, ts, dt);
@@ -44,24 +55,23 @@ public class RoundRobin
         p.decBurstTime(dt);
         ts += dt;
         if(p.isComplete())
-        {
             p.markComplete(ts);
-            m = null;
-        }
         else
-            m = p;
+        {
+            Process m = p.clone();
+            m.setArrivalTime(ts);
+            q2.enqueue(m);
+        }
     }
 
     public void startSimulation()
     {
-        tc = 0; ts = 0;
-        q = new Queue<>(); schedule = new Queue<>();
+        tc = 0; ts = -1;
+        q1 = new Queue<>(); q2 = new Queue<>(); schedule = new Queue<>();
         while(!isComplete() && tc < MAX_TIME)
         {
             catchArrivingProcesses();
-            if(m != null)
-                q.enqueue(m);
-            if(!q.isEmpty())
+            if(!q1.isEmpty())
                 handleProcess();
             tc++;
         }
@@ -80,19 +90,19 @@ public class RoundRobin
 
     public void test01()
     {
-        q = new Queue<>();
-        System.out.println(q);
+        q1 = new Queue<>();
+        System.out.println(q1);
         for(Process p: plist)
         {
             System.out.println("adding: "+p);
-            q.enqueue(p);
-            System.out.println(q);
+            q1.enqueue(p);
+            System.out.println(q1);
         }
         for(Process p: plist)
         {
-            Process t = q.dequeue();
+            Process t = q1.dequeue();
             System.out.println("removed: "+t);
-            System.out.println(q);
+            System.out.println(q1);
         }
     }
 }
