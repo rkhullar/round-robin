@@ -3,8 +3,6 @@ public class RoundRobin
     private final static int MAX_TIME = 1000;
 
     private int tq, t;
-    private Process p;
-    private TimeBlock tb;
     private Process[] plist;
     private Queue<Process> q;
     private Queue<TimeBlock> schedule;
@@ -36,9 +34,9 @@ public class RoundRobin
 
     private void handleProcess()
     {
-        p = q.dequeue();
+        Process p = q.dequeue();
         int bt = p.getBurstTime();
-        tb = new TimeBlock(p);
+        TimeBlock tb = new TimeBlock(p);
         tb.setStart(t);
         if(bt > tq)
             tb.setDelta(tq);
@@ -68,7 +66,13 @@ public class RoundRobin
 
     public void printSchedule()
     {
-        System.out.println(schedule);
+        Node<TimeBlock> node = schedule.getHead();
+        while(node != null)
+        {
+            TimeBlock tb = node.getData();
+            System.out.printf("%02d-%02d: P%s\n", tb.getStart(), tb.getStop(), tb.getProcess().toString());
+            node = node = node.getNext();
+        }
     }
 
     public void test01()

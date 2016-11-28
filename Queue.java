@@ -69,6 +69,16 @@ public class Queue<T>
             enqueue(o.dequeue());
     }
 
+    public Node<T> getHead()
+    {
+        return head;
+    }
+
+    public Node<T> getTail()
+    {
+        return tail;
+    }
+
     public String toString()
     {
         if(isEmpty()) return "[]";

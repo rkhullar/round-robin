@@ -35,9 +35,13 @@ public class TimeBlock
         return t2 - t1;
     }
 
-    public String toString()
+    public void setProcess(Process p)
     {
-        return t1 + "-" + t2 + " ("+p.toString()+")";
+        this.p = p;
+    }
+    public Process getProcess()
+    {
+        return p;
     }
 
     public static TimeBlock fromDelta(Process p, int s, int d)
