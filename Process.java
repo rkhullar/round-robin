@@ -3,7 +3,6 @@ public class Process
     private int id;
     // arrival, burst, run, waiting, completion
     private int at, bt, rt, wt, ct;
-    private boolean done;
 
     public Process(int id, int at, int bt)
     {
@@ -13,7 +12,6 @@ public class Process
         this.rt = 0;
         this.wt = 0;
         this.ct = -1;
-        this.done = false;
     }
 
     public int getArrivalTime()
@@ -33,18 +31,17 @@ public class Process
 
     public boolean isComplete()
     {
-        return this.done;
+        return bt == 0;
     }
 
     public void markComplete(int t)
     {
-        this.ct = t;
-        this.done = true;
+        ct = t;
     }
 
     public void Wait()
     {
-        this.wt++;
+        wt++;
     }
 
     public int totalTime()
@@ -54,6 +51,6 @@ public class Process
 
     public String toString()
     {
-        return id+"";
+        return "P"+id;
     }
 }

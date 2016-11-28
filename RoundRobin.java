@@ -2,10 +2,12 @@ public class RoundRobin
 {
     private final static int MAX_TIME = 1000;
 
-    private int tq, t;
+    // quantum, clock, schedule
+    private int tq, tc, ts;
     private Process[] plist;
     private Queue<Process> q;
     private Queue<TimeBlock> schedule;
+    private Process m;
 
     public void setTimeQuantum(int tq)
     {
@@ -28,7 +30,7 @@ public class RoundRobin
     private void catchArrivingProcesses()
     {
         for(Process p: plist)
-            if(p.getArrivalTime() == t)
+            if(p.getArrivalTime() == tc)
                 q.enqueue(p);
     }
 
@@ -36,31 +38,32 @@ public class RoundRobin
     {
         Process p = q.dequeue();
         int bt = p.getBurstTime();
-        TimeBlock tb = new TimeBlock(p);
-        tb.setStart(t);
-        if(bt > tq)
-            tb.setDelta(tq);
-        else {
-            tb.setDelta(bt);
-            p.markComplete(tb.getStop());
-        }
+        int dt = bt > tq ? tq : bt;
+        TimeBlock tb = TimeBlock.fromDelta(p, ts, dt);
         schedule.enqueue(tb);
-        p.decBurstTime(tb.getDelta());
-        if(!p.isComplete())
-            q.enqueue(p);
+        p.decBurstTime(dt);
+        ts += dt;
+        if(p.isComplete())
+        {
+            p.markComplete(ts);
+            m = null;
+        }
+        else
+            m = p;
     }
 
     public void startSimulation()
     {
-        q = new Queue<>(); t = 0; schedule = new Queue<>();
-        while(!isComplete() && t < MAX_TIME)
+        tc = 0; ts = 0;
+        q = new Queue<>(); schedule = new Queue<>();
+        while(!isComplete() && tc < MAX_TIME)
         {
             catchArrivingProcesses();
-            //System.out.println(t+": "+q.toString());
+            if(m != null)
+                q.enqueue(m);
             if(!q.isEmpty())
                 handleProcess();
-            //System.out.println(t+": "+q.toString());
-            t++;
+            tc++;
         }
     }
 
@@ -70,7 +73,7 @@ public class RoundRobin
         while(node != null)
         {
             TimeBlock tb = node.getData();
-            System.out.printf("%02d-%02d: P%s\n", tb.getStart(), tb.getStop(), tb.getProcess().toString());
+            System.out.printf("%02d-%02d: %s\n", tb.getStart(), tb.getStop(), tb.getProcess().toString());
             node = node = node.getNext();
         }
     }
