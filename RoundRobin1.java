@@ -1,10 +1,11 @@
-public class RoundRobin
+public class RoundRobin1
 {
     private final static int MAX_TIME = 1000;
 
-    // quantum, clock, schedule, requeue
+    // quantum, clock, schedule
     private int tq, tc, ts;
     private Process[] plist;
+    // ready, waiting
     private Queue<Process> q1, q2;
     private Queue<TimeBlock> schedule;
     private boolean handled = false;
@@ -47,6 +48,7 @@ public class RoundRobin
     {
         if(!handled)
             ts = tc;
+        handled = true;
         Process p = q1.dequeue();
         int bt = p.getBurstTime();
         int dt = bt > tq ? tq : bt;
